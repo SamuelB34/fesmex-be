@@ -9,9 +9,10 @@ import { app } from "./app"
 import { resolvers, typeDefs } from "./schema"
 import { makeExecutableSchema } from "@graphql-tools/schema"
 import db from "./config/db"
+import cors from "cors"
+import { authLoggedUser } from "./middlewares/auth"
 
 const port = 8000
-const cors = require("cors")
 
 // Crear el esquema de GraphQL usando typeDefs y resolvers
 const schema = makeExecutableSchema({ typeDefs, resolvers })
@@ -28,6 +29,10 @@ const wsServerCleanup = useServer(
 		schema,
 		execute,
 		subscribe,
+		context: async (ctx, msg, args) => {
+			// Si quieres proteger también las suscripciones, puedes realizar validaciones aquí
+			return {}
+		},
 	},
 	wsServer
 )
@@ -50,8 +55,26 @@ const apolloServer = new ApolloServer({
 
 ;(async () => {
 	await apolloServer.start()
+
 	app.use(cors({ origin: "*" }))
-	app.use("/graphql", expressMiddleware(apolloServer))
+
+	// Configurar el middleware de Express con el contexto
+	app.use(
+		"/graphql",
+		expressMiddleware(apolloServer, {
+			context: async ({ req }) => {
+				const isLoginQuery = req.body?.query?.includes("login")
+				if (isLoginQuery) return { user: null }
+
+				try {
+					const user = await authLoggedUser(req)
+					return { user }
+				} catch (error) {
+					throw new Error(error.message)
+				}
+			},
+		})
+	)
 
 	httpServer.listen(port, () => {
 		console.log(`🚀 Query endpoint ready at http://localhost:${port}/graphql`)
