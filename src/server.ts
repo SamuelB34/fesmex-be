@@ -58,7 +58,6 @@ const apolloServer = new ApolloServer({
 
 	app.use(cors({ origin: "*" }))
 
-	// Configurar el middleware de Express con el contexto
 	app.use(
 		"/graphql",
 		expressMiddleware(apolloServer, {

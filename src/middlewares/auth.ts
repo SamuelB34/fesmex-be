@@ -5,7 +5,7 @@ export const authLoggedUser = async (req: any) => {
 	let jwtInfo = getUserFromJWT(req)
 
 	if (!jwtInfo || !jwtInfo.user_id || !jwtInfo.user_username) {
-		throw new Error("Unauthorized: Invalid token")
+		throw new Error("Invalid token")
 	}
 
 	const user = await users.find({
@@ -14,13 +14,13 @@ export const authLoggedUser = async (req: any) => {
 	})
 
 	if (!user.length) {
-		throw new Error("Unauthorized: User not found")
+		throw new Error("User not found")
 	}
 
 	const user_logged = user[0]
 
 	if (!user_logged.authenticated) {
-		throw new Error("Unauthenticated: User not authenticated")
+		throw new Error("User not authenticated")
 	}
 
 	// Devuelve la información del usuario
