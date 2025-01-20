@@ -11,6 +11,7 @@ import { makeExecutableSchema } from "@graphql-tools/schema"
 import db from "./config/db"
 import cors from "cors"
 import { authLoggedUser } from "./middlewares/auth"
+import routes from "./routes"
 
 const port = 8000
 
@@ -57,7 +58,6 @@ const apolloServer = new ApolloServer({
 	await apolloServer.start()
 
 	app.use(cors({ origin: "*" }))
-
 	app.use(
 		"/graphql",
 		expressMiddleware(apolloServer, {
