@@ -30,3 +30,16 @@ export const getCurrentWeekRange = () => {
 		end: formatDate(endOfWeekTijuana),
 	}
 }
+
+export const getCurrentDateTime = () => {
+	const timeZone = "America/Tijuana"
+	const now = new Date()
+
+	// Convertir a la zona horaria de Tijuana
+	const currentTijuanaTime = new Date(now.toLocaleString("en-US", { timeZone }))
+
+	// Formatear la fecha sin milisegundos
+	const formatDate = (date) => date.toISOString().replace(/\.000Z$/, "Z")
+
+	return formatDate(currentTijuanaTime)
+}

@@ -15,6 +15,9 @@ export const mutationTypeDefs = `
     createAnnouncement(input: CreateAnnouncementInput!): Announcement
     updateAnnouncement(id: ID!, input: UpdateAnnouncementInput!): Announcement
     deleteAnnouncement(id: ID!): String
+    createArticle(input: CreateArticleInput!): Article
+    updateArticle(id: ID!, input: UpdateArticleInput!): Article
+    deleteArticle(id: ID!): String
   }
 
   input CreateUserInput {
@@ -52,16 +55,44 @@ export const mutationTypeDefs = `
     roles: [UserRole]
   }
 
+  input CreateArticleInput {
+    article_number: String!
+    description: String!
+    count: Float!
+    sat_code: String
+    unit: String
+    brand: String!
+    group: String!
+    sub_class: String
+    model: String
+    price: Float!
+    currency: String
+  }
+
+  input UpdateArticleInput {
+    article_number: String
+    description: String
+    count: Float
+    sat_code: String
+    unit: String
+    brand: String
+    group: String
+    sub_class: String
+    model: String
+    price: Float
+    currency: String
+  }
+
   type Token {
     id: ID!
     jwt: String!
   }
   
-	type UserTyper {
-		id: ID!
-		first_name: String!
-		last_name: String!
-	}
+  type UserTyper {
+    id: ID!
+    first_name: String!
+    last_name: String!
+  }
 
   type Announcement {
     id: ID!
@@ -70,5 +101,20 @@ export const mutationTypeDefs = `
     roles: [UserRole!]!
     created_at: String!
     created_by: UserTyper!
+  }
+
+  type Article {
+    id: ID!
+    article_number: String!
+    description: String!
+    count: Float!
+    sat_code: String
+    unit: String
+    brand: String!
+    group: String!
+    sub_class: String
+    model: String
+    price: Float
+    currency: String
   }
 `
