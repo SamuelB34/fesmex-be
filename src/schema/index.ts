@@ -7,8 +7,15 @@ import { subscriptionResolvers } from "./resolvers/subscription"
 import { usersResolvers } from "./resolvers/users"
 import { announcementsResolvers } from "./resolvers/announcements"
 import { inventoryResolvers } from "./resolvers/inventory"
+import { clientTypeDefs } from "./typeDefs/clients"
+import { clientResolvers } from "./resolvers/clients"
 
-export const typeDefs = [queryTypeDefs, mutationTypeDefs, subscriptionTypeDefs]
+export const typeDefs = [
+	queryTypeDefs,
+	clientTypeDefs,
+	mutationTypeDefs,
+	subscriptionTypeDefs,
+]
 
 export const resolvers = [
 	queryResolvers,
@@ -17,4 +24,5 @@ export const resolvers = [
 	announcementsResolvers,
 	subscriptionResolvers,
 	inventoryResolvers,
+	clientResolvers,
 ]
