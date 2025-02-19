@@ -15,6 +15,8 @@ export interface UserType {
 	password: string
 	role: UserRole
 	authenticated: boolean
+	email?: string
+	mobile?: string
 
 	created_at: Date
 	created_by: string
@@ -37,6 +39,8 @@ const usersSchema = new mongoose.Schema<UserType>({
 		default: UserRole.SALES,
 	},
 	authenticated: { type: Boolean, required: true, default: false },
+	email: { type: String },
+	mobile: { type: String },
 
 	created_at: { type: Date, required: true, default: Date.now },
 	created_by: { type: String, required: true },

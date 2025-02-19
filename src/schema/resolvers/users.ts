@@ -24,6 +24,8 @@ export const usersResolvers = {
 				middle_name: user.middle_name || "",
 				last_name: user.last_name,
 				authenticated: user.authenticated,
+				email: user.email,
+				mobile: user.mobile,
 				role: user.role,
 				created_at: user.created_at,
 				created_by: user.created_by,
@@ -151,6 +153,8 @@ export const usersResolvers = {
 			if (input.middle_name) updatedFields.middle_name = input.middle_name
 			if (input.last_name) updatedFields.last_name = input.last_name
 			if (input.role) updatedFields.role = input.role
+			if (input.email) updatedFields.email = input.email
+			if (input.mobile) updatedFields.mobile = input.mobile
 			if (input.authenticated !== undefined)
 				updatedFields.authenticated = input.authenticated
 
