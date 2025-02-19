@@ -9,12 +9,17 @@ import { announcementsResolvers } from "./resolvers/announcements"
 import { inventoryResolvers } from "./resolvers/inventory"
 import { clientTypeDefs } from "./typeDefs/clients"
 import { clientResolvers } from "./resolvers/clients"
+import { usersTypeDefs } from "./typeDefs/users"
+import { quotesTypeDefs } from "./typeDefs/quotes"
+import { quotesResolvers } from "./resolvers/quotes"
 
 export const typeDefs = [
 	queryTypeDefs,
 	clientTypeDefs,
+	usersTypeDefs,
 	mutationTypeDefs,
 	subscriptionTypeDefs,
+	quotesTypeDefs,
 ]
 
 export const resolvers = [
@@ -25,4 +30,5 @@ export const resolvers = [
 	subscriptionResolvers,
 	inventoryResolvers,
 	clientResolvers,
+	quotesResolvers,
 ]
