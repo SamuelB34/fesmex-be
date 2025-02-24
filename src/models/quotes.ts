@@ -30,6 +30,7 @@ export interface QuotesType {
 	date: Date
 	quote_number: number
 	quote_revision: number
+	quote_ref: string
 	company: string
 	company_contact: CompanyContact
 	project_name: string
@@ -70,6 +71,7 @@ const quotesSchema = new Schema<QuotesType>({
 	date: { type: Date, required: true },
 	quote_number: { type: Number, required: true },
 	quote_revision: { type: Number, required: true },
+	quote_ref: { type: String, required: true },
 	company: { type: String, required: true },
 	company_contact: { type: companyContactSchema, required: true },
 	project_name: { type: String, required: true },

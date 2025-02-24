@@ -94,10 +94,7 @@ export const quotesResolvers = {
 		},
 
 		// Update a quote by its ID
-		updateQuote: async (
-			_: any,
-			{ id, input }: { id: string; input: Partial<QuotesType> }
-		) => {
+		updateQuote: async (_: any, { id, input }: { id: string; input: any }) => {
 			if (!mongoose.Types.ObjectId.isValid(id)) {
 				throw new Error("Invalid ID")
 			}
@@ -105,9 +102,16 @@ export const quotesResolvers = {
 			const quote = await Quotes.findById(id)
 			if (!quote) throw new Error("Quote not found")
 
-			const updatedQuote = await Quotes.findByIdAndUpdate(id, input, {
+			const formattedInput = {
+				...input,
+				created_by: input.created_by.id,
+			}
+
+			const updatedQuote = await Quotes.findByIdAndUpdate(id, formattedInput, {
 				new: true,
-			}).populate("article.article_number")
+			})
+				.populate("article.article_number")
+				.populate("created_by", "first_name last_name")
 
 			return updatedQuote
 		},

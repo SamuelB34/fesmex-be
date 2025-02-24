@@ -31,6 +31,7 @@ export const quotesTypeDefs = `
         date: String!
         quote_number: Int!
         quote_revision: Int!
+        quote_ref: String!
         company: String!
         company_contact: CompanyContact!
         project_name: String!
@@ -71,6 +72,7 @@ export const quotesTypeDefs = `
         date: String!
         quote_number: Int!
         quote_revision: Int!
+        quote_ref: String!
         company: String!
         company_contact: CompanyContactInput!
         project_name: String!
