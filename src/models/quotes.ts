@@ -20,6 +20,7 @@ interface Article {
 	description: string
 	quantity: number
 	price: number
+	original_price: number
 	total: number
 	utility: number
 	extra: ArticleExtra
@@ -59,6 +60,7 @@ const articleSchema = new Schema<Article>({
 	description: { type: String, required: true },
 	quantity: { type: Number, required: true },
 	price: { type: Number, required: true },
+	original_price: { type: Number, required: true },
 	total: { type: Number, required: true },
 	utility: { type: Number, required: true },
 	extra: { type: articleExtraSchema, required: false },

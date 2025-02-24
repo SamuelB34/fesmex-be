@@ -53,6 +53,7 @@ export const quotesTypeDefs = `
         description: String!
         quantity: Int!
         price: Float!
+        original_price: Float!
         total: Float!
         utility: Float!
         extra: ArticleExtra!
@@ -104,6 +105,7 @@ export const quotesTypeDefs = `
         description: String!
         quantity: Int!
         price: Float!
+        original_price: Float!
         total: Float!
         utility: Float!
         extra: ArticleExtraInput!
