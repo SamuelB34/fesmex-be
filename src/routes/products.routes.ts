@@ -7,5 +7,6 @@ const router = express.Router()
 
 router.get("/", authLoggedUser, ProductsController.addProduct)
 router.get("/clients", authLoggedUser, ClientsController.addClients)
+router.get("/leads", authLoggedUser, ClientsController.addLeads)
 
 export default router

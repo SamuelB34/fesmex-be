@@ -1,8 +1,6 @@
-import { getCurrentWeekRange } from "../common/auth/dateFunctions"
 import { NextFunction } from "express"
 import { BaseController } from "./base.controller"
 import { orgLists, productsLists } from "./addOrganizations"
-import axios from "axios"
 import Inventory from "../models/inventory"
 const pipedrive = require("pipedrive")
 

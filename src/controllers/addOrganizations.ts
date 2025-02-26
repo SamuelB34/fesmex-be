@@ -2,6 +2,7 @@ import { csvData } from "./csvData"
 import { articles_list } from "./articles"
 import Papa from "papaparse"
 import { clients } from "./clients"
+import { leads_list } from "./leads"
 
 type Record = {
 	[key: string]: any
@@ -57,6 +58,35 @@ export const productsLists = () => {
 	}
 
 	return parseCSV(articles_list)
+}
+
+export const leadsList = () => {
+	const parseCSV = (csv: string) => {
+		const parsed = Papa.parse(csv, {
+			header: true, // Usa la primera línea como encabezados
+			skipEmptyLines: true, // Ignora líneas vacías
+		})
+
+		// Limpia las comillas escapadas de los valores
+		const cleanedData = parsed.data.map((record: Record) => {
+			const cleanedRecord: Record = {}
+			for (const key in record) {
+				if (record.hasOwnProperty(key)) {
+					const originalValue = record[key]
+					let cleanedValue: any = originalValue
+						? originalValue.replace(/\\+"/g, '"').replace(/^"|"$/g, "") // Reemplaza \" por ", elimina comillas externas
+						: null
+
+					cleanedRecord[key] = cleanedValue
+				}
+			}
+			return cleanedRecord
+		})
+
+		return cleanedData
+	}
+
+	return parseCSV(leads_list)
 }
 
 export const clientsLists = () => {
