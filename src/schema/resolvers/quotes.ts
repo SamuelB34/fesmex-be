@@ -24,8 +24,7 @@ export const quotesResolvers = {
 				pageSize = 10,
 				sortBy = "date",
 				sortOrder = "desc",
-				searchField,
-				searchValue,
+				filters = {},
 				startDate,
 				endDate,
 			}: {
@@ -33,48 +32,57 @@ export const quotesResolvers = {
 				pageSize: number
 				sortBy: string
 				sortOrder: string
-				searchField?: keyof QuotesType
-				searchValue?: string
+				filters?: Record<string, any> // Permitir múltiples filtros
 				startDate?: string
 				endDate?: string
 			}
 		) => {
 			const sortDirection = sortOrder === "asc" ? 1 : -1
+			const searchFilter: any = {}
 
-			const searchFilter: any =
-				searchField && searchValue
-					? {
-							[searchField]: { $regex: searchValue, $options: "i" },
-						}
-					: {}
-
-			if (startDate && endDate) {
-				searchFilter.date = {
-					$gte: new Date(startDate),
-					$lte: new Date(endDate),
-				}
-			} else if (startDate) {
-				searchFilter.date = { $gte: new Date(startDate) }
-			} else if (endDate) {
-				searchFilter.date = { $lte: new Date(endDate) }
+			if (filters && Object.keys(filters).length > 0) {
+				searchFilter.$and = Object.entries(filters).map(([key, value]) => {
+					if (key === "quote_number") {
+						return { [key]: Number(value) } // Convertir a número
+					}
+					if (key === "created_by" && mongoose.Types.ObjectId.isValid(value)) {
+						return { [key]: new mongoose.Types.ObjectId(value) } // Convertir a ObjectId
+					}
+					return { [key]: { $regex: value, $options: "i" } } // Búsqueda en strings
+				})
 			}
 
+			// 🔹 Filtro por rango de fechas
+			if (startDate || endDate) {
+				searchFilter.date = {}
+				if (startDate) searchFilter.date.$gte = new Date(startDate)
+				if (endDate) searchFilter.date.$lte = new Date(endDate)
+			}
+
+			// 🔹 Paginación
 			const skip = (page - 1) * pageSize
 
-			const quotes = await Quotes.find(searchFilter)
-				.sort({ [sortBy]: sortDirection })
-				.skip(skip)
-				.limit(pageSize)
-				.populate("article.article_number")
-				.populate("created_by", "first_name last_name")
+			try {
+				// 🔹 Consultar las cotizaciones con filtros y paginación
+				const quotes = await Quotes.find(searchFilter)
+					.sort({ [sortBy]: sortDirection })
+					.skip(skip)
+					.limit(pageSize)
+					.populate("article.article_number")
+					.populate("created_by", "first_name last_name")
 
-			const total = await Quotes.countDocuments(searchFilter)
+				// 🔹 Contar el total de documentos que coinciden con el filtro
+				const total = await Quotes.countDocuments(searchFilter)
 
-			return {
-				total,
-				quotes,
-				page,
-				pageSize,
+				return {
+					total,
+					quotes,
+					page,
+					pageSize,
+				}
+			} catch (error) {
+				console.error("Error fetching quotes:", error)
+				throw new Error("Failed to fetch quotes.")
 			}
 		},
 	},

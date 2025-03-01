@@ -6,8 +6,7 @@ export const quotesTypeDefs = `
             pageSize: Int
             sortBy: String
             sortOrder: String
-            searchField: String
-            searchValue: String
+            filters: FiltersInput
             startDate: String
             endDate: String
         ): QuotePaginationResult!
@@ -39,7 +38,7 @@ export const quotesTypeDefs = `
         payment_condition: String!
         payment_exp: String!
         article: [Article!]!
-				created_by: CreatedBy!
+        created_by: CreatedBy!
     }
 
     type CompanyContact {
@@ -84,15 +83,15 @@ export const quotesTypeDefs = `
     }
     
     type CreatedBy {
-    	id: String!
-    	first_name: String!
-    	last_name: String!
+        id: String!
+        first_name: String!
+        last_name: String!
     }
     
     input CreatedByInput {
-    	id: String!
-    	first_name: String!
-    	last_name: String!
+        id: String!
+        first_name: String!
+        last_name: String!
     }
 
     input CompanyContactInput {
@@ -119,5 +118,13 @@ export const quotesTypeDefs = `
         usa_expenses: Float
         duty: Float
         mex_freight: Float
+    }
+
+    input FiltersInput {
+        quote_number: Int
+        created_by: String
+        project_name: String
+        company: String
+        payment_condition: String
     }
 `
