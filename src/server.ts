@@ -13,7 +13,7 @@ import cors from "cors"
 import { authLoggedUser } from "./middlewares/auth"
 import routes from "./routes"
 
-const port = 8000
+const port = process.env.PORT || 8000
 
 // Crear el esquema de GraphQL usando typeDefs y resolvers
 const schema = makeExecutableSchema({ typeDefs, resolvers })
