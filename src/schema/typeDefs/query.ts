@@ -9,15 +9,16 @@ export const queryTypeDefs = `
             sortOrder: String,
             searchField: String,
             searchValue: String
-        ): AnnouncementListResponse
+        ): AnnouncementListResponse!
         getArticleById(id: ID!): Article
         getAllArticles(
             page: Int
             pageSize: Int
             sortBy: String
             sortOrder: String
-            searchField: String
-            searchValue: String
+            filters: ArticleFilters
+            startDate: String
+            endDate: String
         ): ArticlePaginationResult!
     }
 
@@ -33,10 +34,10 @@ export const queryTypeDefs = `
     }
 
     type AnnouncementListResponse {
-        total: Int
-        announcements: [Announcement]
-        page: Int
-        pageSize: Int
+        total: Int!
+        announcements: [Announcement]!
+        page: Int!
+        pageSize: Int!
     }
 
     type Article {
@@ -52,6 +53,9 @@ export const queryTypeDefs = `
         model: String
         price: Float!
         currency: String
+        created_at: String!
+        updated_at: String!   # 🔹 Se agregó updated_at aquí
+        created_by: UserTyper
     }
 
     type ArticlePaginationResult {
@@ -59,5 +63,17 @@ export const queryTypeDefs = `
         articles: [Article!]!
         page: Int!
         pageSize: Int!
+    }
+
+    input ArticleFilters {
+        article_number: String
+        description: String
+        brand: String
+        group: String
+        sub_class: String
+        model: String
+        currency: String
+        created_by: ID
+        sat_code: String
     }
 `

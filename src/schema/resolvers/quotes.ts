@@ -55,8 +55,18 @@ export const quotesResolvers = {
 			// 🔹 Filtro por rango de fechas
 			if (startDate || endDate) {
 				searchFilter.date = {}
-				if (startDate) searchFilter.date.$gte = new Date(startDate)
-				if (endDate) searchFilter.date.$lte = new Date(endDate)
+
+				if (startDate) {
+					const start = new Date(startDate)
+					start.setUTCHours(0, 0, 0, 0) // ⏰ 00:00:00 en UTC
+					searchFilter.date.$gte = start
+				}
+
+				if (endDate) {
+					const end = new Date(endDate)
+					end.setUTCHours(23, 59, 59, 999) // ⏰ 23:59:59 en UTC
+					searchFilter.date.$lte = end
+				}
 			}
 
 			// 🔹 Paginación

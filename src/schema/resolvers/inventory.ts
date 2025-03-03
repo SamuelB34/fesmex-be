@@ -21,42 +21,53 @@ export const inventoryResolvers = {
 			{
 				page = 1,
 				pageSize = 10,
-				sortBy = "created_at",
-				sortOrder = "desc",
-				searchField,
-				searchValue,
+				sortBy = "brand", // 🔹 Ahora ordena por `article_number` por defecto
+				sortOrder = "asc",
+				filters = {},
 			}: {
 				page: number
 				pageSize: number
 				sortBy: string
 				sortOrder: string
-				searchField?: keyof ArticleType
-				searchValue?: string
+				filters?: Record<string, any>
 			}
 		) => {
 			const sortDirection = sortOrder === "asc" ? 1 : -1
+			const searchFilter: any = {}
 
-			const searchFilter =
-				searchField && searchValue
-					? {
-							[searchField]: { $regex: searchValue, $options: "i" },
+			try {
+				// 🔹 Aplicar filtros dinámicos
+				if (filters && Object.keys(filters).length > 0) {
+					searchFilter.$and = Object.entries(filters).map(([key, value]) => {
+						if (key === "article_number") {
+							return { [key]: Number(value) }
 						}
-					: {}
+						return { [key]: { $regex: value, $options: "i" } }
+					})
+				}
 
-			const skip = (page - 1) * pageSize
+				// 🔹 Paginación
+				const skip = (page - 1) * pageSize
 
-			const articles = await Inventory.find(searchFilter)
-				.sort({ [sortBy]: sortDirection })
-				.skip(skip)
-				.limit(pageSize)
+				// 🔹 Obtener artículos sin `created_at` ni `updated_at`
+				const articles = await Inventory.find(searchFilter)
+					.sort({ [sortBy]: sortDirection })
+					.skip(skip)
+					.limit(pageSize)
+					.exec()
 
-			const total = await Inventory.countDocuments(searchFilter)
+				// 🔹 Contar total de documentos
+				const total = await Inventory.countDocuments(searchFilter)
 
-			return {
-				total,
-				articles,
-				page,
-				pageSize,
+				return {
+					total,
+					articles,
+					page,
+					pageSize,
+				}
+			} catch (error) {
+				console.error("Error al obtener artículos:", error)
+				throw new Error(`Failed to fetch articles: ${error.message}`)
 			}
 		},
 	},
