@@ -39,6 +39,7 @@ export const quotesTypeDefs = `
         payment_exp: String!
         article: [Article!]!
         created_by: CreatedBy!
+        terms: [String!]!  # Nuevo campo agregado
     }
 
     type CompanyContact {
@@ -80,6 +81,7 @@ export const quotesTypeDefs = `
         payment_exp: String!
         article: [ArticleInput!]!
         created_by: CreatedByInput!
+        terms: [String!]!  # Nuevo campo agregado
     }
     
     type CreatedBy {

@@ -39,6 +39,7 @@ export interface QuotesType {
 	payment_exp: string
 	article: Article[]
 	created_by: string
+	terms?: string[]
 }
 
 const companyContactSchema = new Schema<CompanyContact>({
@@ -80,6 +81,7 @@ const quotesSchema = new Schema<QuotesType>({
 	payment_exp: { type: String, required: true },
 	article: { type: [articleSchema], required: true },
 	created_by: { type: String, required: true, ref: "Users" },
+	terms: { type: [String], required: false }, // Nuevo campo agregado
 })
 
 const QuotesModel = model<QuotesType>("Quotes", quotesSchema)
