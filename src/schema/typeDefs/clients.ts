@@ -6,8 +6,9 @@ export const clientTypeDefs = `
             pageSize: Int
             sortBy: String
             sortOrder: String
-            searchField: String
-            searchValue: String
+            filters: ClientFilterInput
+            startDate: String
+            endDate: String
         ): ClientPaginationResult!
     }
 
@@ -49,6 +50,7 @@ export const clientTypeDefs = `
         payment_method_description: String
         comments: String
         contacts: [Contact]
+        created_at: String
     }
 
     type Contact {
@@ -91,5 +93,23 @@ export const clientTypeDefs = `
         last_name: String
         contact_phone: String
         contact_email: String
+    }
+
+    input ClientFilterInput {
+        sn_code: String
+        sn_name: String
+        tax_id: String
+        currency: String
+        phone_1: String
+        email: String
+        sales_department_employee_code: String
+        sales_department_employee_name: String
+        payment_terms_code: String
+        payment_terms_name: String
+        price_list_number: String
+        price_list_name: String
+        city: String
+        state: String
+        country_region: String
     }
 `
