@@ -39,9 +39,6 @@ export const inventoryResolvers = {
 				// 🔹 Aplicar filtros dinámicos
 				if (filters && Object.keys(filters).length > 0) {
 					searchFilter.$and = Object.entries(filters).map(([key, value]) => {
-						if (key === "article_number") {
-							return { [key]: Number(value) }
-						}
 						return { [key]: { $regex: value, $options: "i" } }
 					})
 				}
