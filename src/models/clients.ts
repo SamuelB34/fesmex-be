@@ -31,7 +31,7 @@ export interface ClientType {
 	payment_method_code?: string | null
 	payment_method_description?: string | null
 	comments?: string | null
-	contacts?: ContactType[] // Nuevo campo para contactos
+	contacts?: ContactType[]
 }
 
 const contactSchema = new Schema<ContactType>({
