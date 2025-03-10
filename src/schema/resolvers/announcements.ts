@@ -29,17 +29,25 @@ export const announcementsResolvers = {
 			const user = context.user
 			if (!user) throw new Error("Unauthorized")
 
+			const isAdmin = user.role === "admin" // Verifica si el usuario es admin
+
 			if (id) {
 				// Fetch a single announcement by ID if provided
 				if (!mongoose.Types.ObjectId.isValid(id)) {
 					throw new Error("Invalid ID")
 				}
 
-				const announcement = await Announcement.findOne({
+				const queryFilter: any = {
 					_id: id,
 					deleted_at: { $exists: false },
-					roles: { $in: [user.role] },
-				})
+				}
+
+				// Si NO es admin, aplicar el filtro de roles
+				if (!isAdmin) {
+					queryFilter.roles = { $in: [user.role] }
+				}
+
+				const announcement = await Announcement.findOne(queryFilter)
 					.populate({
 						path: "created_by",
 						select: "first_name last_name",
@@ -51,17 +59,9 @@ export const announcementsResolvers = {
 
 				if (!announcement) throw new Error("Announcement not found")
 
-				const total = await Announcement.countDocuments({
-					_id: id,
-					deleted_at: { $exists: false },
-					roles: { $in: [user.role] },
-				})
-
-				const announcements = [announcement]
-
 				return {
-					total,
-					announcements,
+					total: 1,
+					announcements: [announcement],
 					page,
 					pageSize,
 				}
@@ -69,26 +69,31 @@ export const announcementsResolvers = {
 				// Fetch multiple announcements with pagination and sorting if no ID is provided
 				const sortDirection = sortOrder === "asc" ? 1 : -1
 
-				// Build a search filter if search parameters are provided
+				// Construir filtro de búsqueda si se proporcionan parámetros de búsqueda
 				const searchFilter =
 					searchField && searchValue
-						? {
-								[searchField]: { $regex: searchValue, $options: "i" },
-							}
+						? { [searchField]: { $regex: searchValue, $options: "i" } }
 						: {}
 
-				// Calculate the number of documents to skip for pagination
-				const skip = (page - 1) * pageSize
-
-				// Fetch announcements with the specified filters, sorting, and pagination
-				const announcements: any = await Announcement.find({
+				// Filtro base
+				const queryFilter: any = {
 					deleted_at: { $exists: false },
 					...searchFilter,
-					roles: { $in: [user.role] },
-				})
-					.sort({ [sortBy]: sortDirection }) // Apply sorting
-					.skip(skip) // Skip documents for pagination
-					.limit(pageSize) // Limit the number of results
+				}
+
+				// Si NO es admin, aplicar el filtro de roles
+				if (!isAdmin) {
+					queryFilter.roles = { $in: [user.role] }
+				}
+
+				// Calcular la cantidad de documentos a omitir para la paginación
+				const skip = (page - 1) * pageSize
+
+				// Buscar los anuncios con los filtros, orden y paginación
+				const announcements = await Announcement.find(queryFilter)
+					.sort({ [sortBy]: sortDirection })
+					.skip(skip)
+					.limit(pageSize)
 					.populate({
 						path: "created_by",
 						select: "first_name last_name",
@@ -98,12 +103,8 @@ export const announcementsResolvers = {
 						select: "first_name last_name",
 					})
 
-				// Count the total number of announcements matching the filters
-				const total = await Announcement.countDocuments({
-					deleted_at: { $exists: false },
-					...searchFilter,
-					roles: { $in: [user.role] },
-				})
+				// Contar el total de documentos que coinciden con el filtro
+				const total = await Announcement.countDocuments(queryFilter)
 
 				return {
 					total,
