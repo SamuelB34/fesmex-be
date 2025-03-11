@@ -24,6 +24,7 @@ interface Article {
 	total: number
 	utility: number
 	extra: ArticleExtra
+	type?: string
 }
 
 export interface QuotesType {
@@ -68,6 +69,7 @@ const articleSchema = new Schema<Article>({
 	total: { type: Number, required: true },
 	utility: { type: Number, required: true },
 	extra: { type: articleExtraSchema, required: false },
+	type: { type: String, required: false },
 })
 
 const quotesSchema = new Schema<QuotesType>({

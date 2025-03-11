@@ -60,6 +60,7 @@ export const quotesTypeDefs = `
         total: Float!
         utility: Float!
         extra: ArticleExtra!
+        type: String
     }
 
     type ArticleExtra {
@@ -116,6 +117,7 @@ export const quotesTypeDefs = `
         total: Float!
         utility: Float!
         extra: ArticleExtraInput!
+        type: String
     }
 
     input ArticleExtraInput {
