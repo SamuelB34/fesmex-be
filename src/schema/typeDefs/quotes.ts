@@ -16,6 +16,7 @@ export const quotesTypeDefs = `
         createQuote(input: QuoteInput!): Quote
         updateQuote(id: ID!, input: QuoteInput!): Quote
         deleteQuote(id: ID!): String
+        updateStatus(id: ID!, status: String!): Quote
     }
 
     type QuotePaginationResult {
@@ -42,6 +43,7 @@ export const quotesTypeDefs = `
         terms: [String!]!
         iva: String
         currency: String
+        status: String
     }
 
     type CompanyContact {
@@ -87,6 +89,7 @@ export const quotesTypeDefs = `
         terms: [String!]!
         iva: String
         currency: String
+        status: String
     }
     
     type CreatedBy {
@@ -118,6 +121,7 @@ export const quotesTypeDefs = `
         utility: Float!
         extra: ArticleExtraInput!
         type: String
+        status: String
     }
 
     input ArticleExtraInput {
@@ -136,5 +140,6 @@ export const quotesTypeDefs = `
         payment_condition: String
         iva: String
         currency: String
+        status: String
     }
 `

@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import Quotes, { QuotesType } from "../../models/quotes"
+import Quotes, { QuotesType, Status } from "../../models/quotes"
 
 export const quotesResolvers = {
 	Query: {
@@ -100,10 +100,9 @@ export const quotesResolvers = {
 	Mutation: {
 		// Create a new quote
 		createQuote: async (_: any, { input }: { input: any }) => {
-			console.log(input.created_by.id)
-
 			const formattedInput = {
 				...input,
+				status: Status.OPPORTUNITY,
 				created_by: input.created_by.id,
 			}
 
@@ -128,6 +127,38 @@ export const quotesResolvers = {
 			const updatedQuote = await Quotes.findByIdAndUpdate(id, formattedInput, {
 				new: true,
 			})
+				.populate("article.article_number")
+				.populate("created_by", "first_name last_name")
+
+			return updatedQuote
+		},
+
+		updateStatus: async (
+			_: any,
+			{ id, status }: { id: string; status: Status }
+		) => {
+			// Verificar que el ID sea válido
+			if (!mongoose.Types.ObjectId.isValid(id)) {
+				throw new Error("Invalid ID")
+			}
+
+			// Validar que el status recibido es uno de los valores permitidos en el enum
+			if (!Object.values(Status).includes(status)) {
+				throw new Error("Invalid status value")
+			}
+
+			// Verificar que la cotización existe
+			const quote = await Quotes.findById(id)
+			if (!quote) {
+				throw new Error("Quote not found")
+			}
+
+			// Actualizar el estado de la cotización y devolver la cotización actualizada con los populate correspondientes
+			const updatedQuote = await Quotes.findByIdAndUpdate(
+				id,
+				{ status },
+				{ new: true }
+			)
 				.populate("article.article_number")
 				.populate("created_by", "first_name last_name")
 

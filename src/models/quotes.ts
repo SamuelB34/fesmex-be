@@ -1,4 +1,15 @@
 import mongoose, { Schema, model } from "mongoose"
+import { Currency } from "./inventory"
+
+export enum Status {
+	OPPORTUNITY = "opportunity",
+	QUOTE = "quote",
+	FOLLOWING = "following",
+	NEGOTIATION = "negotiation",
+	WIN = "win",
+	LOST = "lost",
+	DELETE = "delete",
+}
 
 interface CompanyContact {
 	name: string
@@ -43,6 +54,7 @@ export interface QuotesType {
 	terms?: string[]
 	iva?: string
 	currency?: string
+	status?: Status
 }
 
 const companyContactSchema = new Schema<CompanyContact>({
@@ -88,6 +100,12 @@ const quotesSchema = new Schema<QuotesType>({
 	terms: { type: [String], required: false },
 	iva: { type: String, required: false },
 	currency: { type: String, required: false },
+	status: {
+		type: String,
+		enum: Object.values(Status),
+		required: false,
+		default: Status.OPPORTUNITY,
+	},
 })
 
 const QuotesModel = model<QuotesType>("Quotes", quotesSchema)
