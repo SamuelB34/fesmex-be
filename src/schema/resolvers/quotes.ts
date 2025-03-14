@@ -102,7 +102,6 @@ export const quotesResolvers = {
 		createQuote: async (_: any, { input }: { input: any }) => {
 			const formattedInput = {
 				...input,
-				status: Status.OPPORTUNITY,
 				created_by: input.created_by.id,
 			}
 
