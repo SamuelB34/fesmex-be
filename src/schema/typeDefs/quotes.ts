@@ -129,7 +129,7 @@ export const quotesTypeDefs = `
     }
 
     input FiltersInput {
-        quote_number: Int
+        quote_ref: String
         created_by: String
         project_name: String
         company: String
