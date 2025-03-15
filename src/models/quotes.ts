@@ -51,6 +51,8 @@ export interface QuotesType {
 	payment_exp: string
 	article: Article[]
 	created_by: string
+	deleted_at: Date
+	deleted_by: string
 	terms?: string[]
 	iva?: string
 	currency?: string
@@ -97,6 +99,8 @@ const quotesSchema = new Schema<QuotesType>({
 	payment_exp: { type: String, required: true },
 	article: { type: [articleSchema], required: true },
 	created_by: { type: String, required: true, ref: "Users" },
+	deleted_at: { type: Date, required: true },
+	deleted_by: { type: String, required: true },
 	terms: { type: [String], required: false },
 	iva: { type: String, required: false },
 	currency: { type: String, required: false },

@@ -15,7 +15,7 @@ export const quotesTypeDefs = `
     type Mutation {
         createQuote(input: QuoteInput!): Quote
         updateQuote(id: ID!, input: QuoteInput!): Quote
-        deleteQuote(id: ID!): String
+        deleteQuote(id: ID!, deletedBy: String!): String
         updateStatus(id: ID!, status: String!): Quote
     }
 

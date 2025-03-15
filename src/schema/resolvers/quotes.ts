@@ -38,7 +38,9 @@ export const quotesResolvers = {
 			}
 		) => {
 			const sortDirection = sortOrder === "asc" ? 1 : -1
-			const searchFilter: any = {}
+			const searchFilter: any = {
+				deleted_at: { $exists: false },
+			}
 
 			if (filters && Object.keys(filters).length > 0) {
 				searchFilter.$and = Object.entries(filters).map(([key, value]) => {
@@ -165,7 +167,10 @@ export const quotesResolvers = {
 		},
 
 		// Delete a quote by its ID
-		deleteQuote: async (_: any, { id }: { id: string }) => {
+		deleteQuote: async (
+			_: any,
+			{ id, deletedBy }: { id: string; deletedBy: string }
+		) => {
 			if (!mongoose.Types.ObjectId.isValid(id)) {
 				throw new Error("Invalid ID")
 			}
@@ -173,9 +178,16 @@ export const quotesResolvers = {
 			const quote = await Quotes.findById(id)
 			if (!quote) throw new Error("Quote not found")
 
-			await Quotes.findByIdAndDelete(id)
+			if (quote.deleted_at) {
+				throw new Error("Quote is already deleted")
+			}
 
-			return `Quote with ID ${id} has been deleted`
+			await Quotes.findByIdAndUpdate(id, {
+				deleted_at: new Date(),
+				deleted_by: deletedBy,
+			})
+
+			return `Quote with ID ${id} has been soft deleted`
 		},
 	},
 }
