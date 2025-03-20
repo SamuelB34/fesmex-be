@@ -26,6 +26,7 @@ export const usersResolvers = {
 				authenticated: user.authenticated,
 				email: user.email,
 				mobile: user.mobile,
+				pipedrive_id: user.pipedrive_id,
 				role: user.role,
 				created_at: user.created_at,
 				created_by: user.created_by,

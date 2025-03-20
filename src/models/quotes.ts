@@ -56,6 +56,8 @@ export interface QuotesType {
 	terms?: string[]
 	iva?: string
 	currency?: string
+	sap_id?: string
+	pipedrive_id?: string
 	status?: Status
 }
 
@@ -104,6 +106,8 @@ const quotesSchema = new Schema<QuotesType>({
 	terms: { type: [String], required: false },
 	iva: { type: String, required: false },
 	currency: { type: String, required: false },
+	sap_id: { type: String, required: false },
+	pipedrive_id: { type: String, required: false },
 	status: {
 		type: String,
 		enum: Object.values(Status),

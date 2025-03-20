@@ -1,5 +1,11 @@
 import mongoose from "mongoose"
 import Quotes, { QuotesType, Status } from "../../models/quotes"
+import { pipedriveDirectory } from "../../common/directory/pipedriveDirectory"
+import {
+	convertToTijuanaTime,
+	getCurrentDateTime,
+} from "../../common/auth/dateFunctions"
+import axios from "axios"
 
 export const quotesResolvers = {
 	Query: {
@@ -102,11 +108,34 @@ export const quotesResolvers = {
 	Mutation: {
 		// Create a new quote
 		createQuote: async (_: any, { input }: { input: any }) => {
-			const formattedInput = {
-				...input,
-				created_by: input.created_by.id,
+			const total = input.article.reduce(
+				(accumulator, currentValue) => accumulator + currentValue.total,
+				0
+			)
+			const pipedrive_body = {
+				title: input.project_name,
+				value: total,
+				currency: "USD",
+				status: pipedriveDirectory[input.status],
+				add_time: convertToTijuanaTime(input.date),
+				owner_id: +input.created_by.pipedrive_id,
 			}
 
+			const pipedriveResponse = await axios.post(
+				"https://api.pipedrive.com/api/v2/deals",
+				pipedrive_body,
+				{
+					params: {
+						api_token: process.env.PIPEDRIVE_API_KEY,
+					},
+				}
+			)
+
+			let formattedInput = {
+				...input,
+				pipedrive_id: pipedriveResponse.data.data.id,
+				created_by: input.created_by.id,
+			}
 			const newQuote = await Quotes.create(formattedInput)
 			return newQuote
 		},

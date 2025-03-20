@@ -1,7 +1,7 @@
 import { NextFunction } from "express"
 import { BaseController } from "./base.controller"
-import { orgLists, productsLists } from "./addOrganizations"
 import Inventory from "../models/inventory"
+import { productsLists } from "./functions/addOrganizations"
 const pipedrive = require("pipedrive")
 
 class ProductsController extends BaseController {

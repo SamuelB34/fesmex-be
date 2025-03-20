@@ -30,6 +30,8 @@ export const usersTypeDefs = `
         role: String
         created_at: String
         created_by: String
+        pipedrive_id: String
+        sap_id: String
     }
 
     type Token {

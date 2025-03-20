@@ -5,8 +5,7 @@ import {
 import axios from "axios"
 import { NextFunction } from "express"
 import { BaseController } from "./base.controller"
-import { csvData } from "./csvData"
-import { orgLists } from "./addOrganizations"
+import { orgLists } from "./functions/addOrganizations"
 
 class DealsController extends BaseController {
 	public getDeals: any = async (
@@ -17,6 +16,8 @@ class DealsController extends BaseController {
 		try {
 			const dates = getCurrentWeekRange()
 
+			console.log(dates)
+
 			const response = await axios.get(
 				"https://api.pipedrive.com/api/v2/deals",
 				{
@@ -24,7 +25,7 @@ class DealsController extends BaseController {
 						api_token: process.env.PIPEDRIVE_API_KEY,
 						updated_since: dates.start,
 						updated_until: dates.end,
-						status: "won",
+						status: "open",
 					},
 				}
 			)

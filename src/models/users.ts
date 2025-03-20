@@ -17,6 +17,8 @@ export interface UserType {
 	authenticated: boolean
 	email?: string
 	mobile?: string
+	pipedrive_id?: string
+	sap_id?: string
 
 	created_at: Date
 	created_by: string
@@ -41,6 +43,8 @@ const usersSchema = new mongoose.Schema<UserType>({
 	authenticated: { type: Boolean, required: true, default: false },
 	email: { type: String },
 	mobile: { type: String },
+	pipedrive_id: { type: String },
+	sap_id: { type: String },
 
 	created_at: { type: Date, required: true, default: Date.now },
 	created_by: { type: String, required: true },

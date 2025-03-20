@@ -1,8 +1,8 @@
 import { NextFunction } from "express"
 import { BaseController } from "./base.controller"
-import { clientsLists, leadsList } from "./addOrganizations"
 import Clients from "../models/clients"
 import PipedriveLead from "../models/pipedriveLead"
+import { clientsLists, leadsList } from "./functions/addOrganizations"
 
 class ClientsController extends BaseController {
 	public addClients: any = async (

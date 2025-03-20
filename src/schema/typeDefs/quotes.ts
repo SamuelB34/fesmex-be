@@ -102,6 +102,7 @@ export const quotesTypeDefs = `
         id: String!
         first_name: String!
         last_name: String!
+        pipedrive_id: String
     }
 
     input CompanyContactInput {
