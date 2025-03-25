@@ -6,6 +6,7 @@ export interface ContactType {
 	last_name?: string | null
 	contact_phone?: string | null
 	contact_email?: string | null
+	pipedrive_id?: string | null
 }
 
 export interface ClientType {
@@ -32,6 +33,7 @@ export interface ClientType {
 	payment_method_description?: string | null
 	comments?: string | null
 	contacts?: ContactType[]
+	pipedrive_id?: string | null
 }
 
 const contactSchema = new Schema<ContactType>({
@@ -40,6 +42,7 @@ const contactSchema = new Schema<ContactType>({
 	last_name: { type: String, default: null },
 	contact_phone: { type: String, default: null },
 	contact_email: { type: String, default: null },
+	pipedrive_id: { type: String, default: null },
 })
 
 const clientSchema = new Schema<ClientType>({
@@ -65,7 +68,8 @@ const clientSchema = new Schema<ClientType>({
 	payment_method_code: { type: String, default: null },
 	payment_method_description: { type: String, default: null },
 	comments: { type: String, default: null },
-	contacts: { type: [contactSchema], default: [] }, // Array de objetos contactSchema
+	pipedrive_id: { type: String, default: null },
+	contacts: { type: [contactSchema], default: [] },
 })
 
 const Client = model<ClientType>("Client", clientSchema)

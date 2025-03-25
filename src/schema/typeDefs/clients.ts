@@ -51,6 +51,7 @@ export const clientTypeDefs = `
         comments: String
         contacts: [Contact]
         created_at: String
+        pipedrive_id: String
     }
 
     type Contact {
@@ -59,6 +60,7 @@ export const clientTypeDefs = `
         last_name: String
         contact_phone: String
         contact_email: String
+        pipedrive_id: String
     }
 
     input ClientInput {
