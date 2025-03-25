@@ -17,6 +17,7 @@ export const quotesTypeDefs = `
         updateQuote(id: ID!, input: QuoteInput!): Quote
         deleteQuote(id: ID!, deletedBy: String!): String
         updateStatus(id: ID!, status: String!): Quote
+        updateQuoteStatus(id: ID!, quote_status: String!): Quote
     }
 
     type QuotePaginationResult {
@@ -44,6 +45,7 @@ export const quotesTypeDefs = `
         iva: String
         currency: String
         status: String
+        quote_status: String
     }
 
     type CompanyContact {
@@ -90,6 +92,7 @@ export const quotesTypeDefs = `
         iva: String
         currency: String
         status: String
+				quote_status: String
     }
     
     type CreatedBy {
@@ -142,5 +145,6 @@ export const quotesTypeDefs = `
         iva: String
         currency: String
         status: String
+        quote_status: String
     }
 `

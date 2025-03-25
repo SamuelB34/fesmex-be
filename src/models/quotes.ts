@@ -2,13 +2,17 @@ import mongoose, { Schema, model } from "mongoose"
 import { Currency } from "./inventory"
 
 export enum Status {
+	OPEN = "open",
+	WIN = "win",
+	LOST = "lost",
+	DELETE = "delete",
+}
+
+export enum QuoteStatus {
 	OPPORTUNITY = "opportunity",
 	QUOTE = "quote",
 	FOLLOWING = "following",
 	NEGOTIATION = "negotiation",
-	WIN = "win",
-	LOST = "lost",
-	DELETE = "delete",
 }
 
 interface CompanyContact {
@@ -59,6 +63,7 @@ export interface QuotesType {
 	sap_id?: string
 	pipedrive_id?: string
 	status?: Status
+	quote_status?: QuoteStatus
 }
 
 const companyContactSchema = new Schema<CompanyContact>({
@@ -112,7 +117,13 @@ const quotesSchema = new Schema<QuotesType>({
 		type: String,
 		enum: Object.values(Status),
 		required: false,
-		default: Status.OPPORTUNITY,
+		default: Status.OPEN,
+	},
+	quote_status: {
+		type: String,
+		enum: Object.values(QuoteStatus),
+		required: false,
+		default: QuoteStatus.OPPORTUNITY,
 	},
 })
 

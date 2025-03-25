@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import Quotes, { QuotesType, Status } from "../../models/quotes"
+import Quotes, { QuoteStatus, QuotesType, Status } from "../../models/quotes"
 import { pipedriveDirectory } from "../../common/directory/pipedriveDirectory"
 import {
 	convertToTijuanaTime,
@@ -121,19 +121,19 @@ export const quotesResolvers = {
 				owner_id: +input.created_by.pipedrive_id,
 			}
 
-			const pipedriveResponse = await axios.post(
-				"https://api.pipedrive.com/api/v2/deals",
-				pipedrive_body,
-				{
-					params: {
-						api_token: process.env.PIPEDRIVE_API_KEY,
-					},
-				}
-			)
+			// const pipedriveResponse = await axios.post(
+			// 	"https://api.pipedrive.com/api/v2/deals",
+			// 	pipedrive_body,
+			// 	{
+			// 		params: {
+			// 			api_token: process.env.PIPEDRIVE_API_KEY,
+			// 		},
+			// 	}
+			// )
 
 			let formattedInput = {
 				...input,
-				pipedrive_id: pipedriveResponse.data.data.id,
+				pipedrive_id: "pipedriveResponse.data.data.id",
 				created_by: input.created_by.id,
 			}
 			const newQuote = await Quotes.create(formattedInput)
@@ -187,6 +187,38 @@ export const quotesResolvers = {
 			const updatedQuote = await Quotes.findByIdAndUpdate(
 				id,
 				{ status },
+				{ new: true }
+			)
+				.populate("article.article_number")
+				.populate("created_by", "first_name last_name")
+
+			return updatedQuote
+		},
+
+		updateQuoteStatus: async (
+			_: any,
+			{ id, quote_status }: { id: string; quote_status: QuoteStatus }
+		) => {
+			// Verificar que el ID sea válido
+			if (!mongoose.Types.ObjectId.isValid(id)) {
+				throw new Error("Invalid ID")
+			}
+
+			// Validar que el status recibido es uno de los valores permitidos en el enum
+			if (!Object.values(QuoteStatus).includes(quote_status)) {
+				throw new Error("Invalid status value")
+			}
+
+			// Verificar que la cotización existe
+			const quote = await Quotes.findById(id)
+			if (!quote) {
+				throw new Error("Quote not found")
+			}
+
+			// Actualizar el estado de la cotización y devolver la cotización actualizada con los populate correspondientes
+			const updatedQuote = await Quotes.findByIdAndUpdate(
+				id,
+				{ quote_status },
 				{ new: true }
 			)
 				.populate("article.article_number")
