@@ -19,6 +19,7 @@ interface CompanyContact {
 	name: string
 	email: string
 	mobile: string
+	pipedrive_id: string
 }
 
 interface ArticleExtra {
@@ -48,6 +49,7 @@ export interface QuotesType {
 	quote_revision: number
 	quote_ref: string
 	company: string
+	company_pipedrive_id: string
 	company_contact: CompanyContact
 	project_name: string
 	project_lab: string
@@ -70,6 +72,7 @@ const companyContactSchema = new Schema<CompanyContact>({
 	name: { type: String, required: true },
 	email: { type: String, required: true },
 	mobile: { type: String, required: true },
+	pipedrive_id: { type: String },
 })
 
 const articleExtraSchema = new Schema<ArticleExtra>({
@@ -99,6 +102,7 @@ const quotesSchema = new Schema<QuotesType>({
 	quote_revision: { type: Number, required: true },
 	quote_ref: { type: String, required: true },
 	company: { type: String, required: true },
+	company_pipedrive_id: { type: String, isNullable: true },
 	company_contact: { type: companyContactSchema, required: true },
 	project_name: { type: String, required: true },
 	project_lab: { type: String, required: true },

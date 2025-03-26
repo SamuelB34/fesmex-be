@@ -34,6 +34,7 @@ export const quotesTypeDefs = `
         quote_revision: Int!
         quote_ref: String!
         company: String!
+        company_pipedrive_id: String
         company_contact: CompanyContact!
         project_name: String!
         project_lab: String!
@@ -52,6 +53,7 @@ export const quotesTypeDefs = `
         name: String!
         email: String!
         mobile: String!
+        pipedrive_id: String
     }
 
     type Article {
@@ -81,6 +83,7 @@ export const quotesTypeDefs = `
         quote_revision: Int!
         quote_ref: String!
         company: String!
+        company_pipedrive_id: String
         company_contact: CompanyContactInput!
         project_name: String!
         project_lab: String!
@@ -112,6 +115,7 @@ export const quotesTypeDefs = `
         name: String!
         email: String!
         mobile: String!
+        pipedrive_id: String
     }
 
     input ArticleInput {

@@ -112,32 +112,58 @@ export const quotesResolvers = {
 				(accumulator, currentValue) => accumulator + currentValue.total,
 				0
 			)
-			const pipedrive_body = {
-				title: input.project_name,
-				value: total,
-				currency: "USD",
-				status: pipedriveDirectory[input.status],
-				add_time: convertToTijuanaTime(input.date),
-				owner_id: +input.created_by.pipedrive_id,
-			}
+			try {
+				const pipedrive_body = {
+					title: input.project_name,
+					value: total,
+					currency: "USD",
+					status: input.status,
+					add_time: convertToTijuanaTime(input.date),
+					owner_id: +input.created_by.pipedrive_id,
+				}
+				if (
+					input.company_pipedrive_id &&
+					input.company_pipedrive_id !== "NaN"
+				) {
+					Object.assign(pipedrive_body, {
+						org_id: +input.company_pipedrive_id,
+					})
+				}
 
-			// const pipedriveResponse = await axios.post(
-			// 	"https://api.pipedrive.com/api/v2/deals",
-			// 	pipedrive_body,
-			// 	{
-			// 		params: {
-			// 			api_token: process.env.PIPEDRIVE_API_KEY,
-			// 		},
-			// 	}
-			// )
+				if (
+					input.company_contact.pipedrive_id &&
+					input.company_contact.pipedrive_id !== "NaN"
+				) {
+					Object.assign(pipedrive_body, {
+						person_id: +input.company_contact.pipedrive_id,
+					})
+				}
 
-			let formattedInput = {
-				...input,
-				pipedrive_id: "pipedriveResponse.data.data.id",
-				created_by: input.created_by.id,
+				const pipedriveResponse = await axios.post(
+					"https://api.pipedrive.com/api/v2/deals",
+					pipedrive_body,
+					{
+						params: {
+							api_token: process.env.PIPEDRIVE_API_KEY,
+						},
+					}
+				)
+
+				let formattedInput = {
+					...input,
+					company_contact: {
+						...input.company_contact,
+						pipedrive_id: input.company_contact.pipedrive_id || "",
+					},
+					company_pipedrive_id: input.company_pipedrive_id ?? "",
+					pipedrive_id: pipedriveResponse.data.data.id,
+					created_by: input.created_by.id,
+				}
+				const newQuote = await Quotes.create(formattedInput)
+				return newQuote
+			} catch (e) {
+				console.log(e)
 			}
-			const newQuote = await Quotes.create(formattedInput)
-			return newQuote
 		},
 
 		// Update a quote by its ID
