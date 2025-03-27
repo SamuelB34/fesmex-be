@@ -6,6 +6,10 @@ import {
 	getCurrentDateTime,
 } from "../../common/auth/dateFunctions"
 import axios from "axios"
+import {
+	createOrganization,
+	createPersonOrganization,
+} from "../../middlewares/pipedrive"
 
 export const quotesResolvers = {
 	Query: {
@@ -113,11 +117,12 @@ export const quotesResolvers = {
 				0
 			)
 			try {
-				const pipedrive_body = {
+				const pipedrive_body: any = {
 					title: input.project_name,
 					value: total,
 					currency: "USD",
 					status: input.status,
+					stage_id: pipedriveDirectory[input.quote_status],
 					add_time: convertToTijuanaTime(input.date),
 					owner_id: +input.created_by.pipedrive_id,
 				}
@@ -128,6 +133,14 @@ export const quotesResolvers = {
 					Object.assign(pipedrive_body, {
 						org_id: +input.company_pipedrive_id,
 					})
+				} else {
+					const created = await createOrganization({
+						name: input.company,
+						owner_id: +input.created_by.pipedrive_id,
+					})
+					Object.assign(pipedrive_body, {
+						org_id: created.data.data.id,
+					})
 				}
 
 				if (
@@ -136,6 +149,17 @@ export const quotesResolvers = {
 				) {
 					Object.assign(pipedrive_body, {
 						person_id: +input.company_contact.pipedrive_id,
+					})
+				} else {
+					const created = await createPersonOrganization({
+						name: input.company_contact.name,
+						owner_id: +input.created_by.pipedrive_id,
+						org_id: pipedrive_body.org_id,
+						email: input.company_contact.email,
+						phone_number: input.company_contact.mobile,
+					})
+					Object.assign(pipedrive_body, {
+						person_id: created.data.data.id,
 					})
 				}
 
@@ -153,12 +177,18 @@ export const quotesResolvers = {
 					...input,
 					company_contact: {
 						...input.company_contact,
-						pipedrive_id: input.company_contact.pipedrive_id || "",
+						pipedrive_id:
+							input.company_contact.pipedrive_id ??
+							`${pipedrive_body.person_id}`,
 					},
-					company_pipedrive_id: input.company_pipedrive_id ?? "",
+					company_pipedrive_id:
+						input.company_pipedrive_id ?? `${pipedrive_body.org_id}`,
 					pipedrive_id: pipedriveResponse.data.data.id,
 					created_by: input.created_by.id,
 				}
+
+				console.log("DONE ✅✅✅✅✅")
+
 				const newQuote = await Quotes.create(formattedInput)
 				return newQuote
 			} catch (e) {
