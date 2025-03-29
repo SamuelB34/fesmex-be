@@ -227,6 +227,40 @@ export const quotesResolvers = {
 				owner_id: +input.created_by.pipedrive_id,
 			}
 
+			if (input.company_pipedrive_id && input.company_pipedrive_id !== "NaN") {
+				Object.assign(pipedrive_body, {
+					org_id: +input.company_pipedrive_id,
+				})
+			} else {
+				const created = await createOrganization({
+					name: input.company,
+					owner_id: +input.created_by.pipedrive_id,
+				})
+				Object.assign(pipedrive_body, {
+					org_id: created.data.data.id,
+				})
+			}
+
+			if (
+				input.company_contact.pipedrive_id &&
+				input.company_contact.pipedrive_id !== "NaN"
+			) {
+				Object.assign(pipedrive_body, {
+					person_id: +input.company_contact.pipedrive_id,
+				})
+			} else {
+				const created = await createPersonOrganization({
+					name: input.company_contact.name,
+					owner_id: +input.created_by.pipedrive_id,
+					org_id: pipedrive_body.org_id,
+					email: input.company_contact.email,
+					phone_number: input.company_contact.mobile,
+				})
+				Object.assign(pipedrive_body, {
+					person_id: created.data.data.id,
+				})
+			}
+
 			try {
 				await updateQuote(quote.pipedrive_id, pipedrive_body)
 			} catch (e) {
