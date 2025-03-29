@@ -9,6 +9,8 @@ import axios from "axios"
 import {
 	createOrganization,
 	createPersonOrganization,
+	updateQuoteStage,
+	updateQuoteStatus,
 } from "../../middlewares/pipedrive"
 
 export const quotesResolvers = {
@@ -238,7 +240,11 @@ export const quotesResolvers = {
 			if (!quote) {
 				throw new Error("Quote not found")
 			}
-
+			try {
+				await updateQuoteStatus(quote.pipedrive_id, pipedriveDirectory[status])
+			} catch (e) {
+				console.log(e)
+			}
 			// Actualizar el estado de la cotización y devolver la cotización actualizada con los populate correspondientes
 			const updatedQuote = await Quotes.findByIdAndUpdate(
 				id,
@@ -269,6 +275,15 @@ export const quotesResolvers = {
 			const quote = await Quotes.findById(id)
 			if (!quote) {
 				throw new Error("Quote not found")
+			}
+
+			try {
+				await updateQuoteStage(
+					quote.pipedrive_id,
+					pipedriveDirectory[quote_status]
+				)
+			} catch (e) {
+				throw new Error(e)
 			}
 
 			// Actualizar el estado de la cotización y devolver la cotización actualizada con los populate correspondientes
