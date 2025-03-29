@@ -1,6 +1,7 @@
 import { convertToTijuanaTime } from "../common/auth/dateFunctions"
 import axios from "axios"
 import { QuoteStatus, Status } from "../models/quotes"
+import { pipedriveDirectory } from "../common/directory/pipedriveDirectory"
 
 interface CreateOrganization {
 	name: string
@@ -15,9 +16,13 @@ interface CreatePersonOrganization {
 	phone_number: string
 }
 
-interface UpdateStageId {
-	id: string
-	status: QuoteStatus
+interface UpdateQuote {
+	title: string
+	value: number
+	currency: "USD"
+	status: string
+	stage_id: string
+	owner_id: number
 }
 
 export const createOrganization = async (data: CreateOrganization) => {
@@ -69,6 +74,18 @@ export const createPersonOrganization = async (
 			api_token: process.env.PIPEDRIVE_API_KEY,
 		},
 	})
+}
+
+export const updateQuote = async (id: string, body: UpdateQuote) => {
+	return await axios.patch(
+		`https://api.pipedrive.com/api/v2/deals/${id}`,
+		body,
+		{
+			params: {
+				api_token: process.env.PIPEDRIVE_API_KEY,
+			},
+		}
+	)
 }
 
 export const updateQuoteStatus = async (id: string, status: string) => {

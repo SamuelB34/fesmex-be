@@ -9,6 +9,7 @@ import axios from "axios"
 import {
 	createOrganization,
 	createPersonOrganization,
+	updateQuote,
 	updateQuoteStage,
 	updateQuoteStatus,
 } from "../../middlewares/pipedrive"
@@ -210,6 +211,26 @@ export const quotesResolvers = {
 			const formattedInput = {
 				...input,
 				created_by: input.created_by.id,
+			}
+
+			const total = input.article.reduce(
+				(accumulator, currentValue) => accumulator + currentValue.total,
+				0
+			)
+
+			const pipedrive_body: any = {
+				title: input.project_name,
+				value: total,
+				currency: "USD",
+				status: input.status,
+				stage_id: pipedriveDirectory[input.quote_status],
+				owner_id: +input.created_by.pipedrive_id,
+			}
+
+			try {
+				await updateQuote(quote.pipedrive_id, pipedrive_body)
+			} catch (e) {
+				console.log(e)
 			}
 
 			const updatedQuote = await Quotes.findByIdAndUpdate(id, formattedInput, {
