@@ -46,6 +46,7 @@ export const quotesTypeDefs = `
         iva: String
         currency: String
         status: String
+        pipedrive_id: String
         quote_status: String
     }
 
@@ -150,5 +151,6 @@ export const quotesTypeDefs = `
         currency: String
         status: String
         quote_status: String
+        only_last: Boolean
     }
 `

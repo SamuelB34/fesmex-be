@@ -55,6 +55,25 @@ export const quotesResolvers = {
 				deleted_at: { $exists: false },
 			}
 
+			if (filters.quote_ref && filters.only_last) {
+				const partialRef = filters.quote_ref
+
+				const lastQuote = await Quotes.findOne({
+					...searchFilter,
+					quote_ref: { $regex: partialRef, $options: "i" },
+				})
+					.sort({ date: -1 })
+					.populate("article.article_number")
+					.populate("created_by", "first_name last_name")
+
+				return {
+					total: lastQuote ? 1 : 0,
+					quotes: lastQuote ? [lastQuote] : [],
+					page: 1,
+					pageSize: 1,
+				}
+			}
+
 			if (filters && Object.keys(filters).length > 0) {
 				searchFilter.$and = Object.entries(filters).map(([key, value]) => {
 					if (key === "quote_number") {
