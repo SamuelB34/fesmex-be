@@ -133,7 +133,10 @@ export const quotesResolvers = {
 
 	Mutation: {
 		// Create a new quote
-		createQuote: async (_: any, { input }: { input: any }) => {
+		createQuote: async (
+			_: any,
+			{ input, avoidPipedrive }: { input: any; avoidPipedrive: boolean }
+		) => {
 			const total = input.article.reduce(
 				(accumulator, currentValue) => accumulator + currentValue.total,
 				0
@@ -156,13 +159,15 @@ export const quotesResolvers = {
 						org_id: +input.company_pipedrive_id,
 					})
 				} else {
-					const created = await createOrganization({
-						name: input.company,
-						owner_id: +input.created_by.pipedrive_id,
-					})
-					Object.assign(pipedrive_body, {
-						org_id: created.data.data.id,
-					})
+					if (!avoidPipedrive) {
+						const created = await createOrganization({
+							name: input.company,
+							owner_id: +input.created_by.pipedrive_id,
+						})
+						Object.assign(pipedrive_body, {
+							org_id: created.data.data.id,
+						})
+					}
 				}
 
 				if (
@@ -173,40 +178,60 @@ export const quotesResolvers = {
 						person_id: +input.company_contact.pipedrive_id,
 					})
 				} else {
-					const created = await createPersonOrganization({
-						name: input.company_contact.name,
-						owner_id: +input.created_by.pipedrive_id,
-						org_id: pipedrive_body.org_id,
-						email: input.company_contact.email,
-						phone_number: input.company_contact.mobile,
-					})
-					Object.assign(pipedrive_body, {
-						person_id: created.data.data.id,
-					})
+					if (!avoidPipedrive) {
+						const created = await createPersonOrganization({
+							name: input.company_contact.name,
+							owner_id: +input.created_by.pipedrive_id,
+							org_id: pipedrive_body.org_id,
+							email: input.company_contact.email,
+							phone_number: input.company_contact.mobile,
+						})
+						Object.assign(pipedrive_body, {
+							person_id: created.data.data.id,
+						})
+					}
 				}
 
-				const pipedriveResponse = await axios.post(
-					"https://api.pipedrive.com/api/v2/deals",
-					pipedrive_body,
-					{
-						params: {
-							api_token: process.env.PIPEDRIVE_API_KEY,
-						},
-					}
-				)
+				let formattedInput = {}
 
-				let formattedInput = {
-					...input,
-					company_contact: {
-						...input.company_contact,
-						pipedrive_id:
-							input.company_contact.pipedrive_id ??
-							`${pipedrive_body.person_id}`,
-					},
-					company_pipedrive_id:
-						input.company_pipedrive_id ?? `${pipedrive_body.org_id}`,
-					pipedrive_id: pipedriveResponse.data.data.id,
-					created_by: input.created_by.id,
+				if (!avoidPipedrive) {
+					const pipedriveResponse = await axios.post(
+						"https://api.pipedrive.com/api/v2/deals",
+						pipedrive_body,
+						{
+							params: {
+								api_token: process.env.PIPEDRIVE_API_KEY,
+							},
+						}
+					)
+
+					formattedInput = {
+						...input,
+						company_contact: {
+							...input.company_contact,
+							pipedrive_id:
+								input.company_contact.pipedrive_id ??
+								`${pipedrive_body.person_id}`,
+						},
+						company_pipedrive_id:
+							input.company_pipedrive_id ?? `${pipedrive_body.org_id}`,
+						pipedrive_id: pipedriveResponse.data.data.id,
+						created_by: input.created_by.id,
+					}
+				} else {
+					formattedInput = {
+						...input,
+						company_contact: {
+							...input.company_contact,
+							pipedrive_id:
+								input.company_contact.pipedrive_id ??
+								`${pipedrive_body.person_id}`,
+						},
+						company_pipedrive_id:
+							input.company_pipedrive_id ?? `${pipedrive_body.org_id}`,
+						pipedrive_id: null,
+						created_by: input.created_by.id,
+					}
 				}
 
 				console.log("DONE ✅✅✅✅✅")
@@ -219,7 +244,14 @@ export const quotesResolvers = {
 		},
 
 		// Update a quote by its ID
-		updateQuote: async (_: any, { id, input }: { id: string; input: any }) => {
+		updateQuote: async (
+			_: any,
+			{
+				id,
+				input,
+				avoidPipedrive,
+			}: { id: string; input: any; avoidPipedrive: boolean }
+		) => {
 			if (!mongoose.Types.ObjectId.isValid(id)) {
 				throw new Error("Invalid ID")
 			}
@@ -227,7 +259,7 @@ export const quotesResolvers = {
 			const quote = await Quotes.findById(id)
 			if (!quote) throw new Error("Quote not found")
 
-			const formattedInput = {
+			let formattedInput = {
 				...input,
 				created_by: input.created_by.id,
 			}
@@ -251,13 +283,15 @@ export const quotesResolvers = {
 					org_id: +input.company_pipedrive_id,
 				})
 			} else {
-				const created = await createOrganization({
-					name: input.company,
-					owner_id: +input.created_by.pipedrive_id,
-				})
-				Object.assign(pipedrive_body, {
-					org_id: created.data.data.id,
-				})
+				if (!avoidPipedrive) {
+					const created = await createOrganization({
+						name: input.company,
+						owner_id: +input.created_by.pipedrive_id,
+					})
+					Object.assign(pipedrive_body, {
+						org_id: created.data.data.id,
+					})
+				}
 			}
 
 			if (
@@ -268,22 +302,42 @@ export const quotesResolvers = {
 					person_id: +input.company_contact.pipedrive_id,
 				})
 			} else {
-				const created = await createPersonOrganization({
-					name: input.company_contact.name,
-					owner_id: +input.created_by.pipedrive_id,
-					org_id: pipedrive_body.org_id,
-					email: input.company_contact.email,
-					phone_number: input.company_contact.mobile,
-				})
-				Object.assign(pipedrive_body, {
-					person_id: created.data.data.id,
-				})
+				if (!avoidPipedrive) {
+					const created = await createPersonOrganization({
+						name: input.company_contact.name,
+						owner_id: +input.created_by.pipedrive_id,
+						org_id: pipedrive_body.org_id,
+						email: input.company_contact.email,
+						phone_number: input.company_contact.mobile,
+					})
+					Object.assign(pipedrive_body, {
+						person_id: created.data.data.id,
+					})
+				}
 			}
 
-			try {
-				await updateQuote(quote.pipedrive_id, pipedrive_body)
-			} catch (e) {
-				console.log(e)
+			if (!avoidPipedrive) {
+				try {
+					if (quote.pipedrive_id) {
+						await updateQuote(quote.pipedrive_id, pipedrive_body)
+					} else {
+						const pipedriveResponse = await axios.post(
+							"https://api.pipedrive.com/api/v2/deals",
+							pipedrive_body,
+							{
+								params: {
+									api_token: process.env.PIPEDRIVE_API_KEY,
+								},
+							}
+						)
+						formattedInput = {
+							...formattedInput,
+							pipedrive_id: pipedriveResponse.data.data.id,
+						}
+					}
+				} catch (e) {
+					console.log(e)
+				}
 			}
 
 			const updatedQuote = await Quotes.findByIdAndUpdate(id, formattedInput, {

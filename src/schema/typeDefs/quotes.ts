@@ -13,8 +13,8 @@ export const quotesTypeDefs = `
     }
 
     type Mutation {
-        createQuote(input: QuoteInput!): Quote
-        updateQuote(id: ID!, input: QuoteInput!): Quote
+        createQuote(input: QuoteInput! avoidPipedrive: Boolean!): Quote
+        updateQuote(id: ID!, input: QuoteInput! avoidPipedrive: Boolean!): Quote
         deleteQuote(id: ID!, deletedBy: String!): String
         updateStatus(id: ID!, status: String!): Quote
         updateQuoteStatus(id: ID!, quote_status: String!): Quote
