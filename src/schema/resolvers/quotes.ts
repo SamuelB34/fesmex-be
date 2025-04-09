@@ -280,11 +280,11 @@ export const quotesResolvers = {
 				})
 			}
 
-			try {
-				await updateQuote(quote.pipedrive_id, pipedrive_body)
-			} catch (e) {
-				console.log(e)
-			}
+			// try {
+			// 	await updateQuote(quote.pipedrive_id, pipedrive_body)
+			// } catch (e) {
+			// 	console.log(e)
+			// }
 
 			const updatedQuote = await Quotes.findByIdAndUpdate(id, formattedInput, {
 				new: true,
