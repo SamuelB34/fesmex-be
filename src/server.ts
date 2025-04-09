@@ -15,7 +15,6 @@ import routes from "./routes"
 
 const port = process.env.PORT || 8000
 
-// Crear el esquema de GraphQL usando typeDefs y resolvers
 const schema = makeExecutableSchema({ typeDefs, resolvers })
 
 const httpServer = createServer(app)
