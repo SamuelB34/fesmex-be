@@ -47,6 +47,7 @@ export const quotesTypeDefs = `
         currency: String
         status: String
         pipedrive_id: String
+        pdf_download_link: String
         quote_status: String
     }
 
