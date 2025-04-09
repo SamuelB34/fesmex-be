@@ -369,7 +369,11 @@ export const quotesResolvers = {
 				throw new Error("Quote not found")
 			}
 			try {
-				await updateQuoteStatus(quote.pipedrive_id, pipedriveDirectory[status])
+				if (quote.pipedrive_id)
+					await updateQuoteStatus(
+						quote.pipedrive_id,
+						pipedriveDirectory[status]
+					)
 			} catch (e) {
 				console.log(e)
 			}
@@ -406,10 +410,11 @@ export const quotesResolvers = {
 			}
 
 			try {
-				await updateQuoteStage(
-					quote.pipedrive_id,
-					pipedriveDirectory[quote_status]
-				)
+				if (quote.pipedrive_id)
+					await updateQuoteStage(
+						quote.pipedrive_id,
+						pipedriveDirectory[quote_status]
+					)
 			} catch (e) {
 				throw new Error(e)
 			}
