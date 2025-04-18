@@ -104,11 +104,17 @@ export const clientResolvers = {
 	Mutation: {
 		// Create a new client
 		createClient: async (_: any, { input }: { input: ClientType }) => {
-			const { sn_code } = input
+			const { sn_code, sn_name } = input
 
 			// Check if the client code already exists
 			const existingClient = await Clients.findOne({ sn_code })
 			if (existingClient) throw new Error("Client code already exists")
+
+			// Check if the client code already exists
+			const existingClientName = await Clients.findOne({
+				sn_name: { $regex: `^${sn_name}$`, $options: "i" },
+			})
+			if (existingClientName) throw new Error("Client name already exists")
 
 			// Create and save the new client
 			const newClient = await Clients.create(input)
