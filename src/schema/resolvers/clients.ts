@@ -1,5 +1,6 @@
 import Clients, { ClientType } from "../../models/clients"
 import mongoose from "mongoose"
+import Quotes from "../../models/quotes"
 
 export const clientResolvers = {
 	Query: {
@@ -37,7 +38,9 @@ export const clientResolvers = {
 			}
 		) => {
 			const sortDirection = sortOrder === "asc" ? 1 : -1
-			const searchFilter: any = {}
+			const searchFilter: any = {
+				deleted_at: { $exists: false },
+			}
 
 			// 🔹 Aplicar filtros dinámicos
 			if (filters && Object.keys(filters).length > 0) {
@@ -133,15 +136,20 @@ export const clientResolvers = {
 		},
 
 		// Delete a client by its ID
-		deleteClient: async (_: any, { id }: { id: string }) => {
+		deleteClient: async (
+			_: any,
+			{ id, deletedBy }: { id: string; deletedBy: string }
+		) => {
 			if (!mongoose.Types.ObjectId.isValid(id)) {
 				throw new Error("Invalid ID")
 			}
 
 			const client = await Clients.findById(id)
 			if (!client) throw new Error("Client not found")
-
-			await Clients.findByIdAndDelete(id)
+			await Clients.findByIdAndUpdate(id, {
+				deleted_at: new Date(),
+				deleted_by: deletedBy,
+			})
 
 			return `Client with ID ${id} has been deleted`
 		},

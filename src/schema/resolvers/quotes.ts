@@ -55,14 +55,12 @@ export const quotesResolvers = {
 				deleted_at: { $exists: false },
 			}
 
-			if (filters.quote_ref && filters.only_last) {
-				const partialRef = filters.quote_ref
-
+			if (filters.created_by && filters.only_last) {
 				const lastQuote = await Quotes.findOne({
 					...searchFilter,
-					quote_ref: { $regex: partialRef, $options: "i" },
+					created_by: filters.created_by,
 				})
-					.sort({ date: -1 })
+					.sort({ quote_number: -1 })
 					.populate("article.article_number")
 					.populate("created_by", "first_name last_name")
 
@@ -109,7 +107,7 @@ export const quotesResolvers = {
 			try {
 				// 🔹 Consultar las cotizaciones con filtros y paginación
 				const quotes = await Quotes.find(searchFilter)
-					.sort({ [sortBy]: sortDirection })
+					.sort({ created_at: -1 })
 					.skip(skip)
 					.limit(pageSize)
 					.populate("article.article_number")
@@ -234,9 +232,10 @@ export const quotesResolvers = {
 					}
 				}
 
-				console.log("DONE ✅✅✅✅✅")
-
-				const newQuote = await Quotes.create(formattedInput)
+				const newQuote = await Quotes.create({
+					...formattedInput,
+					created_at: new Date(Date.now()),
+				})
 				return newQuote
 			} catch (e) {
 				console.log(e)

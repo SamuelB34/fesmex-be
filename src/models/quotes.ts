@@ -57,6 +57,7 @@ export interface QuotesType {
 	payment_exp: string
 	article: Article[]
 	created_by: string
+	created_at: Date
 	deleted_at: Date
 	deleted_by: string
 	terms?: string[]
@@ -111,6 +112,7 @@ const quotesSchema = new Schema<QuotesType>({
 	payment_exp: { type: String, required: true },
 	article: { type: [articleSchema], required: true },
 	created_by: { type: String, required: true, ref: "Users" },
+	created_at: { type: Date, required: false },
 	deleted_at: { type: Date, required: false },
 	deleted_by: { type: String, required: false },
 	terms: { type: [String], required: false },
