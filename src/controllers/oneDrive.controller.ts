@@ -33,12 +33,13 @@ class QuotesController extends BaseController {
 
 			const downloadUrl = result["@microsoft.graph.downloadUrl"]
 
-			await Quotes.findByIdAndUpdate(quoteId, {
+			const new_quote = await Quotes.findByIdAndUpdate(quoteId, {
 				pdf_download_link: downloadUrl,
 			})
 			res.json({
 				success: true,
 				message: "PDF uploaded and quote updated.",
+				quote: new_quote,
 				downloadUrl,
 			})
 		} catch (error: any) {
