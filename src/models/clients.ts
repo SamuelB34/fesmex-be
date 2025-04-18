@@ -34,6 +34,8 @@ export interface ClientType {
 	comments?: string | null
 	contacts?: ContactType[]
 	pipedrive_id?: string | null
+	deleted_at?: Date | null
+	deleted_by?: string | null
 }
 
 const contactSchema = new Schema<ContactType>({
@@ -70,6 +72,8 @@ const clientSchema = new Schema<ClientType>({
 	comments: { type: String, default: null },
 	pipedrive_id: { type: String, default: null },
 	contacts: { type: [contactSchema], default: [] },
+	deleted_at: { type: Date, required: false },
+	deleted_by: { type: String, required: false },
 })
 
 const Client = model<ClientType>("Client", clientSchema)
