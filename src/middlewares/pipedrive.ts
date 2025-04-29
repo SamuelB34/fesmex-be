@@ -25,6 +25,23 @@ interface UpdateQuote {
 	owner_id: number
 }
 
+export const getDealById = async (id: string) => {
+	try {
+		const response = await axios.get(
+			`https://api.pipedrive.com/api/v2/deals/${id}`,
+			{
+				params: {
+					api_token: process.env.PIPEDRIVE_API_KEY,
+				},
+			}
+		)
+		return response.data.data // null si no existe
+	} catch (error) {
+		console.error("Error fetching deal from Pipedrive:", error)
+		throw new Error("Failed to fetch deal from Pipedrive")
+	}
+}
+
 export const createOrganization = async (data: CreateOrganization) => {
 	const date = new Date(Date.now())
 	const body = {

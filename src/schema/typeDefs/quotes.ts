@@ -17,6 +17,7 @@ export const quotesTypeDefs = `
         updateQuote(id: ID!, input: QuoteInput! avoidPipedrive: Boolean!): Quote
         deleteQuote(id: ID!, deletedBy: String!): String
         updateStatus(id: ID!, status: String!): Quote
+        assignPipedriveDeal(id: ID!, pipedrive_id: String!): Quote
         updateQuoteStatus(id: ID!, quote_status: String!): Quote
     }
 

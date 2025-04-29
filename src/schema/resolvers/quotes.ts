@@ -9,10 +9,12 @@ import axios from "axios"
 import {
 	createOrganization,
 	createPersonOrganization,
+	getDealById,
 	updateQuote,
 	updateQuoteStage,
 	updateQuoteStatus,
 } from "../../middlewares/pipedrive"
+import Users from "../../models/users"
 
 export const quotesResolvers = {
 	Query: {
@@ -422,6 +424,78 @@ export const quotesResolvers = {
 			const updatedQuote = await Quotes.findByIdAndUpdate(
 				id,
 				{ quote_status },
+				{ new: true }
+			)
+				.populate("article.article_number")
+				.populate("created_by", "first_name last_name")
+
+			return updatedQuote
+		},
+
+		assignPipedriveDeal: async (
+			_: any,
+			{ id, pipedrive_id }: { id: string; pipedrive_id: string }
+		) => {
+			if (!mongoose.Types.ObjectId.isValid(id)) {
+				throw new Error("Invalid ID")
+			}
+
+			if (!pipedrive_id) {
+				throw new Error("No pipedrive id provided")
+			}
+
+			const quote = await Quotes.findById(id).populate("created_by")
+
+			if (!quote) {
+				throw new Error("Quote not found")
+			}
+
+			const total = quote.article.reduce(
+				(acc: number, item: any) => acc + item.total,
+				0
+			)
+
+			const user = await Users.findById(quote.created_by)
+			if (!user || !user.pipedrive_id) {
+				throw new Error("El usuario creador no tiene pipedrive_id")
+			}
+
+			try {
+				await getDealById(pipedrive_id)
+			} catch (e) {
+				throw new Error("Trato no encontrado en Pipedrive")
+			}
+
+			const pipedrive_body: any = {
+				title: quote.project_name,
+				value: total,
+				currency: "USD",
+				status: quote.status,
+				stage_id: pipedriveDirectory[quote.quote_status],
+				owner_id: +user.pipedrive_id,
+			}
+
+			if (quote.company_pipedrive_id && quote.company_pipedrive_id !== "NaN") {
+				pipedrive_body.org_id = +quote.company_pipedrive_id
+			}
+
+			if (
+				quote.company_contact?.pipedrive_id &&
+				quote.company_contact.pipedrive_id !== "NaN"
+			) {
+				pipedrive_body.person_id = +quote.company_contact.pipedrive_id
+			}
+
+			try {
+				await updateQuote(pipedrive_id, pipedrive_body)
+			} catch (e) {
+				console.error("Error updating deal in Pipedrive:", e)
+				throw new Error("Failed to update deal in Pipedrive")
+			}
+
+			const updatedQuote = await Quotes.findByIdAndUpdate(
+				id,
+				{ pipedrive_id },
 				{ new: true }
 			)
 				.populate("article.article_number")
