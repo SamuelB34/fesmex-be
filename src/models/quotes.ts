@@ -68,6 +68,7 @@ export interface QuotesType {
 	pdf_download_link?: string
 	status?: Status
 	quote_status?: QuoteStatus
+	notes?: string
 }
 
 const companyContactSchema = new Schema<CompanyContact>({
@@ -112,9 +113,6 @@ const quotesSchema = new Schema<QuotesType>({
 	payment_exp: { type: String, required: true },
 	article: { type: [articleSchema], required: true },
 	created_by: { type: String, required: true, ref: "Users" },
-	created_at: { type: Date, required: false },
-	deleted_at: { type: Date, required: false },
-	deleted_by: { type: String, required: false },
 	terms: { type: [String], required: false },
 	iva: { type: String, required: false },
 	currency: { type: String, required: false },
@@ -133,6 +131,10 @@ const quotesSchema = new Schema<QuotesType>({
 		required: false,
 		default: QuoteStatus.OPPORTUNITY,
 	},
+	notes: { type: String, required: false },
+	created_at: { type: Date, required: false },
+	deleted_at: { type: Date, required: false },
+	deleted_by: { type: String, required: false },
 })
 
 const QuotesModel = model<QuotesType>("Quotes", quotesSchema)
