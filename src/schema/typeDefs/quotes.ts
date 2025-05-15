@@ -50,6 +50,7 @@ export const quotesTypeDefs = `
         pipedrive_id: String
         pdf_download_link: String
         quote_status: String
+        notes: String
     }
 
     type CompanyContact {
@@ -99,6 +100,7 @@ export const quotesTypeDefs = `
         currency: String
         status: String
 				quote_status: String
+				notes: String
     }
     
     type CreatedBy {

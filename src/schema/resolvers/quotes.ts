@@ -150,7 +150,7 @@ export const quotesResolvers = {
 			try {
 				const pipedrive_body: any = {
 					title: input.project_name,
-					value: total + (+input.iva / 100) * total,
+					value: total,
 					currency: "USD",
 					status: input.status,
 					stage_id: pipedriveDirectory[input.quote_status],
@@ -278,7 +278,7 @@ export const quotesResolvers = {
 
 			const pipedrive_body: any = {
 				title: input.project_name,
-				value: total + (+input.iva / 100) * total,
+				value: total,
 				currency: "USD",
 				status: input.status,
 				stage_id: pipedriveDirectory[input.quote_status],
