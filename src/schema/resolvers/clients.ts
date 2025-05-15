@@ -106,13 +106,19 @@ export const clientResolvers = {
 		createClient: async (_: any, { input }: { input: ClientType }) => {
 			const { sn_code, sn_name } = input
 
-			// Check if the client code already exists
-			const existingClient = await Clients.findOne({ sn_code })
-			if (existingClient) throw new Error("Client code already exists")
+			if (sn_code !== "-") {
+				// Check if the client code already exists
+				const existingClient = await Clients.findOne({
+					sn_code,
+					deleted_at: { $exists: false },
+				})
+				if (existingClient) throw new Error("Client code already exists")
+			}
 
 			// Check if the client code already exists
 			const existingClientName = await Clients.findOne({
 				sn_name: { $regex: `^${sn_name}$`, $options: "i" },
+				deleted_at: { $exists: false },
 			})
 			if (existingClientName) throw new Error("Client name already exists")
 

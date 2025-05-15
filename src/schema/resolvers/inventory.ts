@@ -21,7 +21,7 @@ export const inventoryResolvers = {
 			{
 				page = 1,
 				pageSize = 10,
-				sortBy = "brand", // 🔹 Ahora ordena por `article_number` por defecto
+				sortBy = "brand",
 				sortOrder = "asc",
 				filters = {},
 			}: {
