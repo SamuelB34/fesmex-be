@@ -50,11 +50,17 @@ export const quotesResolvers = {
 				filters?: Record<string, any>
 				startDate?: string
 				endDate?: string
-			}
+			},
+			context
 		) => {
+			const user = context.user
 			const sortDirection = sortOrder === "asc" ? 1 : -1
 			const searchFilter: any = {
 				deleted_at: { $exists: false },
+			}
+
+			if (user.role !== "admin") {
+				searchFilter.created_by = user.id
 			}
 
 			if (filters.created_by && filters.only_last) {
