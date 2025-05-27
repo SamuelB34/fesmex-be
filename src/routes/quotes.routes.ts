@@ -14,4 +14,11 @@ router.post(
 	QuotesController.uploadPdfFile
 )
 
+router.post(
+	"/upload",
+	upload.single("file"),
+	authLoggedUser,
+	QuotesController.uploadQuoteWithCSV
+)
+
 export default router
