@@ -1,10 +1,11 @@
 import fs from "fs"
 import { getAccessToken, uploadFileToOneDrive } from "./functions/oneDrive_auth"
 import { BaseController } from "./base.controller"
-import Quotes from "../models/quotes"
+import Quotes, { CreatedMethod } from "../models/quotes"
 import { z } from "zod"
 import csvParser from "csv-parser"
 import { Request, Response, NextFunction } from "express"
+import { enrichQuoteWithPipedrive } from "./functions/pipedrive"
 
 const articleExtraInputSchema = z.object({
 	multiplier: z.string().optional().transform(Number),
@@ -79,6 +80,7 @@ class QuotesController extends BaseController {
 	) => {
 		const file = (req as any).file
 		const rawQuote = (req as any).body.quote
+		const avoidPipedrive = (req as any).body.avoidPipedrive === "true"
 
 		if (!file || !rawQuote) {
 			return res.status(400).json({ error: "Missing CSV file or quote JSON" })
@@ -95,7 +97,16 @@ class QuotesController extends BaseController {
 
 		fs.createReadStream(file.path)
 			.pipe(csvParser())
-			.on("data", (row) => results.push(row))
+			.on("data", (row) => {
+				const isEmptyRow = Object.values(row).every(
+					(value) =>
+						value === undefined || value === null || String(value).trim() === ""
+				)
+
+				if (!isEmptyRow) {
+					results.push(row)
+				}
+			})
 			.on("end", async () => {
 				try {
 					const validatedArticles = results.map((row) =>
@@ -111,20 +122,17 @@ class QuotesController extends BaseController {
 						})
 					)
 
-					const total = validatedArticles.reduce(
-						(acc, curr) => acc + curr.total,
-						0
+					const enrichedQuote = await enrichQuoteWithPipedrive(
+						{ ...parsedQuote, article: validatedArticles },
+						avoidPipedrive
 					)
 
-					const quoteToInsert = {
-						...parsedQuote,
-						article: validatedArticles,
-						total,
-						created_by: parsedQuote.created_by?.id,
+					const newQuote = await Quotes.create({
+						...enrichedQuote,
+						total: validatedArticles.reduce((acc, curr) => acc + curr.total, 0),
 						created_at: new Date(),
-					}
-
-					const newQuote = await Quotes.create(quoteToInsert)
+						created_method: CreatedMethod.CSV,
+					})
 
 					res.json({
 						success: true,
