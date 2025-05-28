@@ -15,6 +15,11 @@ export enum QuoteStatus {
 	NEGOTIATION = "negotiation",
 }
 
+export enum CreatedMethod {
+	MANUAL = "manual",
+	CSV = "csv",
+}
+
 interface CompanyContact {
 	name: string
 	email: string
@@ -56,10 +61,13 @@ export interface QuotesType {
 	payment_condition: string
 	payment_exp: string
 	article: Article[]
-	created_by: string
 	created_at: Date
+	created_by: string
+	created_method: CreatedMethod
 	deleted_at: Date
 	deleted_by: string
+	updated_at: Date
+	updated_by: string
 	terms?: string[]
 	iva?: string
 	currency?: string
@@ -135,6 +143,14 @@ const quotesSchema = new Schema<QuotesType>({
 	created_at: { type: Date, required: false },
 	deleted_at: { type: Date, required: false },
 	deleted_by: { type: String, required: false },
+	updated_at: { type: Date, required: false },
+	updated_by: { type: String, required: false },
+	created_method: {
+		type: String,
+		enum: Object.values(CreatedMethod),
+		required: false,
+		default: CreatedMethod.MANUAL,
+	},
 })
 
 const QuotesModel = model<QuotesType>("Quotes", quotesSchema)
