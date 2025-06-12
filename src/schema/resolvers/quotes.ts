@@ -1,5 +1,10 @@
 import mongoose from "mongoose"
-import Quotes, { QuoteStatus, QuotesType, Status } from "../../models/quotes"
+import Quotes, {
+	CreatedMethod,
+	QuoteStatus,
+	QuotesType,
+	Status,
+} from "../../models/quotes"
 import { pipedriveDirectory } from "../../common/directory/pipedriveDirectory"
 import {
 	convertToTijuanaTime,
@@ -243,6 +248,7 @@ export const quotesResolvers = {
 				const newQuote = await Quotes.create({
 					...formattedInput,
 					created_at: new Date(Date.now()),
+					created_method: CreatedMethod.MANUAL,
 				})
 				return newQuote
 			} catch (e) {
